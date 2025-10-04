@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -20,8 +21,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,11 +40,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-
-import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.example.lolproyecto.ui.theme.LolProyectoTheme
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import com.google.gson.Gson
+import android.net.Uri
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 
 
 class MainActivity : ComponentActivity() {
@@ -51,14 +71,25 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {TopAppBar(
-                        title = { Text("Champions App") },
+                        title = {
+                            Box(modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center){
+                                Text(text = "⚔\uFE0F Champions App ⚔\uFE0F",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFFC79B3B)
+                                )
+                            }},
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color(0xFF0A1428)
+                        )
                         )}
                 ) {
                         padding ->
                     Column(
                         modifier = Modifier.consumeWindowInsets(padding).padding(padding)
                     ){
-                        DinamicChampionListItem();
+                        ChampionApp();
                     }
 
 
@@ -69,16 +100,132 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-data class Champion( val image: Int = 0, val title: String, val description: String, val imageUrl: String? = null)
+
+
+@Composable
+fun ChampionApp(){
+    var navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "pantalla1"
+    ){
+        composable("pantalla1"){
+            DinamicChampionListItem(navController)
+        }
+        composable("detalle/{championJson}"){
+            backStackEntry ->
+                val championJson = backStackEntry.arguments?.getString("championJson")
+                val champion = Gson().fromJson(championJson, Champion::class.java)
+                ChampionDetails(navController, champion = champion)
+
+        }
+    }
+}
+
+
+@Composable
+fun ChampionDetails(
+    navController: NavController,
+    champion: Champion
+){
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()) {
+
+        AsyncImage(
+            modifier = Modifier.padding(16.dp).clip(RoundedCornerShape(16.dp)),
+            model = champion.splashUrl.toHttpUrlOrNull(),
+            contentDescription = "${champion.title} splash"
+        )
+
+        Text(
+            text = champion.title,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Text(
+            text = champion.surname,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+            ) {
+            Column(horizontalAlignment = Alignment.Start,
+                modifier = Modifier.padding(horizontal = 16.dp)) {
+                Text("Clase: ${champion.clase}")
+                Text("Carril: ${champion.carril}")
+                Text("Recurso: ${champion.recurso}")
+                Text("Lanzamiento: ${champion.lanzamiento}")
+            }
+            if (champion.imageUrl.isNullOrBlank()){
+            Image(
+            modifier = Modifier.size(128.dp).padding(horizontal = 16.dp),
+            painter = painterResource(champion.image),
+            contentDescription = "Champion Image",
+            contentScale = ContentScale.Crop
+            )
+            }else{
+            AsyncImage(
+            modifier = Modifier.size(128.dp).padding(horizontal = 16.dp),
+            model = champion.imageUrl.toHttpUrlOrNull(),
+            contentDescription = null
+            )
+            }
+        }
+
+
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = champion.descripcion,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column(
+            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(Color(0xFFF5F5F5)).padding(12.dp)
+        ) {
+            Text(text = "📰 Estadísticas:", fontWeight = FontWeight.Bold)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            champion.estadisticas.forEach { estat ->
+                Text("• $estat")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+
+
+
+
+        Button(onClick = {navController.navigate("pantalla1")}) {
+            Text("Volver")
+        }
+    }
+}
+
 
 @Composable
 fun ChampionListItem(
-    champion: Champion
+    champion: Champion,
+    navController: NavController
 ){
     val imageModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).size(40.dp).clip(CircleShape)
     Row(
-        modifier = Modifier.fillMaxWidth().background(color = Color.LightGray),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth().background(Color(0xFF0A1428)),
+        verticalAlignment = Alignment.CenterVertically,
+
     ) {
         if (champion.imageUrl.isNullOrBlank()){
             Image(
@@ -94,50 +241,46 @@ fun ChampionListItem(
                 contentDescription = null
             )
         }
-        Column (
-            modifier = Modifier.padding(vertical = 8.dp)
-        ){
-            Text(text=champion.title,
-                style = MaterialTheme.typography.headlineMedium)
-            Text(text=champion.description,
-                style = MaterialTheme.typography.bodyMedium)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween){
+            Column (
+                modifier = Modifier.padding(vertical = 8.dp)
+            ){
+                Text(text=champion.title,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White)
+                Text(text=champion.surname,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White)
+            }
+
+            IconButton(
+                modifier = Modifier.padding(horizontal = 16.dp).clip(CircleShape).background(Color(0xFF785A28)),
+                onClick = {
+                    var championJson = Uri.encode(Gson().toJson(champion))
+                    navController.navigate("detalle/$championJson")
+                }){
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null,
+                    tint = Color(0xFFF0E6D2)
+
+                )
+            }
         }
+
         
     }
 }
 
 @Composable
-fun DinamicChampionListItem(){
-    val dinamicCHampionList: List<Champion> = listOf(
+fun DinamicChampionListItem(navController: NavController){
 
-        Champion(image = R.drawable.diana,title = "Diana", description = "El Desdén de la Luna"),
-        Champion(image = R.drawable.fizz,title = "Fizz", description = "El Bromista de las Mareas"),
-        Champion(image = R.drawable.irelia,title = "Irelia", description = "La Bailarina de las Cuchillas"),
-        Champion(image = R.drawable.leona,title = "Leona", description = "El Amanecer Radiante"),
-        Champion(image = R.drawable.mordekaiser,title = "Mordekaiser", description = "La Pesadilla de Hierro"),
-        Champion(image = R.drawable.neeko,title = "Neeko", description = "La Camaleona Curiosa"),
-        Champion(image = R.drawable.senna,title = "Senna", description = "La Redentora"),
-        Champion(image = R.drawable.taric,title = "Taric", description = "El Escudo de Valoran"),
-        Champion(image = R.drawable.teemo,title = "Teemo", description = "El Explorador Veloz"),
-        Champion(image = R.drawable.vi,title = "Vi", description = "Los Puños de Hierro"),
-        Champion(image = R.drawable.ziggs,title = "Ziggs", description = "El Yordle Explosivo"),
-        //Campeones con URL
-        Champion(image = 5, title = "Annie", description = "Hija de la Oscuridad", imageUrl = "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6f/AnnieSquare.png/revision/latest?cb=20170728174743"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/1/15/Aatrox_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20180612203801", title = "Aatrox", description = "La Espada Oscura" ),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/2/2a/Ahri_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20230201172235", title = "Ahri", description = "El zorro de nueve colas"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/a/ad/Yasuo_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20150402222545", title = "Yasuo", description = "El Imperdonable"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/6/65/Jinx_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20160417011945", title = "Jinx", description = "El Gatillo Suelto"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/c/c3/Thresh_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20150402221302", title = "Thresh", description = "El Carcelero Implacable"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/5/5f/Ekko_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20151218185247", title = "Ekko", description = "El Chico que Fragmentó el Tiempo"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/3/31/Samira_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20200829040527", title = "Samira", description = "El Desierto Salvaje"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/d/da/Sett_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20200119095456", title = "Sett", description = "El Jefe"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/0/06/Vex_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20231116224716", title = "Vex", description = "La Tristeza Encarnada"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/4/46/Zed_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20160526214523", title = "Zed", description = "El Maestro de las Sombras"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/b/bf/Lux_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20150402220552", title = "Lux", description = "La Dama de la Luz"),
-        Champion(imageUrl = "https://static.wikia.nocookie.net/leagueoflegends/images/c/c9/Kayn_OriginalSquare.png/revision/latest/scale-to-width-down/42?cb=20170628021945", title = "Kayn", description = "El Segador Sombrío"))
     LazyColumn (){
         items(dinamicCHampionList){
-            ChampionListItem(it)
+            ChampionListItem(it, navController)
         }
     }
 
