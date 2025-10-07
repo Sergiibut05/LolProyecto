@@ -23,7 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.materialIcon
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,23 +42,23 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.lolproyecto.ui.theme.LolProyectoTheme
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import com.google.gson.Gson
-import android.net.Uri
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.foundation.verticalScroll
+
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation.toRoute
 
 
 class MainActivity : ComponentActivity() {
@@ -108,16 +108,24 @@ fun ChampionApp(){
 
     NavHost(
         navController = navController,
-        startDestination = "pantalla1"
+        startDestination = Destination.List
     ){
-        composable("pantalla1"){
-            DinamicChampionListItem(navController)
+        composable<Destination.List>{
+            val onNavigateDetail: (Long) -> Unit = { championId ->
+                navController.navigate(Destination.Detail(id = championId))
+            }
+            DinamicChampionListItem(onNavigateDetail =  onNavigateDetail , dinamicChampionList = dinamicChampionList)
         }
-        composable("detalle/{championJson}"){
+        composable<Destination.Detail>{
             backStackEntry ->
-                val championJson = backStackEntry.arguments?.getString("championJson")
-                val champion = Gson().fromJson(championJson, Champion::class.java)
-                ChampionDetails(navController, champion = champion)
+                val destinationDetail: Destination.Detail = backStackEntry.toRoute()
+                val id = destinationDetail.id
+
+                val champion = dinamicChampionList.first({ id == it.id })
+                fun onNavigateBack(){
+                    navController.popBackStack()
+                }
+                ChampionDetails({onNavigateBack()}, champion = champion)
 
         }
     }
@@ -126,12 +134,12 @@ fun ChampionApp(){
 
 @Composable
 fun ChampionDetails(
-    navController: NavController,
+    onNavigateCancel: () -> Unit,
     champion: Champion
 ){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()) {
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
 
         AsyncImage(
             modifier = Modifier.padding(16.dp).clip(RoundedCornerShape(16.dp)),
@@ -209,7 +217,7 @@ fun ChampionDetails(
 
 
 
-        Button(onClick = {navController.navigate("pantalla1")}) {
+        Button(onClick = {onNavigateCancel()}) {
             Text("Volver")
         }
     }
@@ -218,8 +226,9 @@ fun ChampionDetails(
 
 @Composable
 fun ChampionListItem(
+    onNavigateDetail: (Long) -> Unit,
     champion: Champion,
-    navController: NavController
+
 ){
     val imageModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).size(40.dp).clip(CircleShape)
     Row(
@@ -259,8 +268,8 @@ fun ChampionListItem(
             IconButton(
                 modifier = Modifier.padding(horizontal = 16.dp).clip(CircleShape).background(Color(0xFF785A28)),
                 onClick = {
-                    var championJson = Uri.encode(Gson().toJson(champion))
-                    navController.navigate("detalle/$championJson")
+
+                    onNavigateDetail(champion.id)
                 }){
                 Icon(
                     imageVector = Icons.Default.Info,
@@ -276,11 +285,11 @@ fun ChampionListItem(
 }
 
 @Composable
-fun DinamicChampionListItem(navController: NavController){
+fun DinamicChampionListItem(onNavigateDetail: (Long) -> Unit, dinamicChampionList: List<Champion>){
 
     LazyColumn (){
-        items(dinamicCHampionList){
-            ChampionListItem(it, navController)
+        items(dinamicChampionList){
+            ChampionListItem(onNavigateDetail, it)
         }
     }
 

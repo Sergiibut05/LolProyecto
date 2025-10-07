@@ -1,6 +1,7 @@
 package com.example.lolproyecto
 
 data class Champion(
+    val id: Long,
     val image: Int = 0,
     val title: String,
     val surname: String,
@@ -15,8 +16,9 @@ data class Champion(
 )
 
 
-val dinamicCHampionList: List<Champion> = listOf(
+val dinamicChampionList: List<Champion> = listOf(
     Champion(
+        id = 1,
         image = R.drawable.diana,
         title = "Diana",
         surname = "El Desdén de la Luna",
@@ -40,6 +42,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 2,
         image = R.drawable.fizz,
         title = "Fizz",
         surname = "El Bromista de las Mareas",
@@ -63,6 +66,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 3,
         image = R.drawable.irelia,
         title = "Irelia",
         surname = "La Bailarina de las Cuchillas",
@@ -86,6 +90,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 4,
         image = R.drawable.leona,
         title = "Leona",
         surname = "El Amanecer Radiante",
@@ -109,6 +114,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 5,
         image = R.drawable.mordekaiser,
         title = "Mordekaiser",
         surname = "La Pesadilla de Hierro",
@@ -130,6 +136,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 6,
         image = R.drawable.neeko,
         title = "Neeko",
         surname = "La Camaleona Curiosa",
@@ -153,6 +160,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 7,
         image = R.drawable.senna,
         title = "Senna",
         surname = "La Redentora",
@@ -176,6 +184,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 8,
         image = R.drawable.taric,
         title = "Taric",
         surname = "El Escudo de Valoran",
@@ -199,6 +208,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 9,
         image = R.drawable.teemo,
         title = "Teemo",
         surname = "El Explorador Veloz",
@@ -222,6 +232,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 10,
         image = R.drawable.vi,
         title = "Vi",
         surname = "Los Puños de Hierro",
@@ -245,6 +256,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 11,
         image = R.drawable.ziggs,
         title = "Ziggs",
         surname = "El Yordle Explosivo",
@@ -269,6 +281,7 @@ val dinamicCHampionList: List<Champion> = listOf(
 
     // Campeones con URL ya existentes (añado campos extra)
     Champion(
+        id = 12,
         title = "Annie",
         surname = "Hija de la Oscuridad",
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Annie_OriginalSquare.png",
@@ -291,6 +304,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 13,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Aatrox_OriginalSquare.png",
         title = "Aatrox",
         surname = "La Espada Oscura",
@@ -311,6 +325,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 14,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Ahri_OriginalSquare.png",
         title = "Ahri",
         surname = "El zorro de nueve colas",
@@ -333,6 +348,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 15,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Yasuo_OriginalSquare.png",
         title = "Yasuo",
         surname = "El Imperdonable",
@@ -353,6 +369,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 16,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Jinx_OriginalSquare.png",
         title = "Jinx",
         surname = "El Gatillo Suelto",
@@ -375,6 +392,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 17,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Thresh_OriginalSquare.png",
         title = "Thresh",
         surname = "El Carcelero Implacable",
@@ -397,6 +415,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 18,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Ekko_OriginalSquare.png",
         title = "Ekko",
         surname = "El Chico que Fragmentó el Tiempo",
@@ -419,6 +438,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 19,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Samira_OriginalSquare.png",
         title = "Samira",
         surname = "El Desierto Salvaje",
@@ -441,6 +461,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 20,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Sett_OriginalSquare.png",
         title = "Sett",
         surname = "El Jefe",
@@ -461,6 +482,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 21,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Vex_OriginalSquare.png",
         title = "Vex",
         surname = "La Tristeza Encarnada",
@@ -483,6 +505,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 22,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Zed_OriginalSquare.png",
         title = "Zed",
         surname = "El Maestro de las Sombras",
@@ -503,6 +526,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 23,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Lux_OriginalSquare.png",
         title = "Lux",
         surname = "La Dama de la Luz",
@@ -525,6 +549,7 @@ val dinamicCHampionList: List<Champion> = listOf(
     ),
 
     Champion(
+        id = 24,
         imageUrl = "https://leagueoflegends.fandom.com/wiki/Special:FilePath/Kayn_OriginalSquare.png",
         title = "Kayn",
         surname = "El Segador Sombrío",
